@@ -246,13 +246,15 @@ export default () => {
 						<Typography>Yes</Typography>
 
 						<Box component="form" autoComplete="off">
-							<TextField id="outlined-basic" label="" variant="outlined" value={year} onChange={(e) => setYear(e.target.value)}/>
+							<TextField id="outlined-basic" label="" variant="outlined" value={year}
+									   error={useYear && !year.match(/^\d{4}$/)}
+									   onChange={(e) => setYear(e.target.value)}/>
 						</Box>
 					</Stack>
 				</Grid>
 				<Grid item xs={12}>
 					{ /* @ts-ignore */ }
-					<Button disabled={isLoadingResults} variant="contained" onClick={() => {
+					<Button disabled={isLoadingResults || !makes.length || ( useYear && year === '') } variant="contained" onClick={() => {
 						setIsLoadingResults(true);
 						loadModels(getModels(type, makes, useYear ? year : ''));
 					}}>Search</Button>
