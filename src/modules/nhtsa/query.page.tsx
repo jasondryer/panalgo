@@ -155,6 +155,7 @@ export default () => {
 	const [year, setYear] = useState<string>('');
 	const [isLoadingMakes, setIsLoadingMakes] = useState<boolean>(false);
 	const [isLoadingResults, setIsLoadingResults] = useState<boolean>(false);
+	const [isQueryChanged, setQueryChanged] = useState<boolean>(false);
 
 	const [models, setModels] = useState<VehicleModelResult[]>([]);
 
@@ -196,7 +197,10 @@ export default () => {
 							id="vehicleType-select"
 							value={ type }
 							label="Vehicle Type"
-							onChange={ (e) => setType(e.target.value) }
+							onChange={ (e) => {
+								setQueryChanged(true);
+								setType(e.target.value);
+							}}
 						>
 							{vehicleTypes.map((type) => (
 								<MenuItem key={type.Id} value={type.Name}>{type.Name}</MenuItem>
@@ -212,8 +216,11 @@ export default () => {
 							id="vehicleMakes-select"
 							multiple
 							value={ makes }
-							// @ts-ignore
-							onChange={ (e) => setMakes(e.target.value) }
+							onChange={ (e) => {
+								setQueryChanged(true);
+								// @ts-ignore
+								setMakes(e.target.value);
+							}}
 							input={<OutlinedInput id="vehicleMakes-select" label="Make" />}
 							renderValue={(selected) => (
 								<Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
@@ -248,14 +255,18 @@ export default () => {
 						<Box component="form" autoComplete="off">
 							<TextField id="outlined-basic" label="" variant="outlined" value={year}
 									   error={useYear && !year.match(/^\d{4}$/)}
-									   onChange={(e) => setYear(e.target.value)}/>
+									   onChange={(e) => {
+										   setQueryChanged(true);
+										   setYear(e.target.value);
+									   }}/>
 						</Box>
 					</Stack>
 				</Grid>
 				<Grid item xs={12}>
 					{ /* @ts-ignore */ }
-					<Button disabled={isLoadingResults || !makes.length || ( useYear && year === '') } variant="contained" onClick={() => {
+					<Button disabled={isLoadingResults || !isQueryChanged || !makes.length || ( useYear && year === '') } variant="contained" onClick={() => {
 						setIsLoadingResults(true);
+						setQueryChanged(false);
 						loadModels(getModels(type, makes, useYear ? year : ''));
 					}}>Search</Button>
 				</Grid>
